@@ -26,26 +26,39 @@
 	    		} 
 		}
 	
-	public void receiveMessage(String check) {
+	public String receiveMessage() {
+		String result = "";
 		try {
 			String msg = din.readLine();
 			System.out.println(msg);
+			result = msg;
 
 		} catch (IOException e) {
     			System.out.println(e);
     		}  
+    		return result;
+	}
+	
+	public int dataExtract(String str) {
+		String[] arr = str.split(" ", 3);
+		int nRecs = Integer.parseInt(String.valueOf(arr[1]));	
+		return nRecs;	
 	}
 	
 	public void handShake() {
 		this.sendMessage("HELO");
-		this.receiveMessage("OK");
+		this.receiveMessage();
 		this.sendMessage("AUTH nguy315");
-		this.receiveMessage("OK");
+		this.receiveMessage();
 		this.sendMessage("REDY");
 	}
 	
+	public void schedule(String jobID, String sType, String sID) {
+		this.sendMessage("SCHD " + jobID + " " + sType + " " + sID);	
+	}
+	
 	public void stopConnection() {
-	try {
+		try {
 			dout.write(("QUIT\n").getBytes());
 			dout.flush();
     			dout.close();  
@@ -59,6 +72,32 @@
 		geekClient client = new geekClient();
 		client.startConnection("localhost",50000);
 		client.handShake();
+		
+		String str = client.receiveMessage();
+		
+		while(str != "NONE") {
+			client.receiveMessage();
+			client.sendMessage("GETS All");
+			
+			String data = client.receiveMessage();
+			int nRecs = client.dataExtract(data);
+			
+			int j = 0;
+			List<String> list = new ArrayList<String>();
+				
+			for(int i = 0; i < nRecs; i++) {
+				String input = client.receiveMessage();
+				
+				String[] arr = input.split(" ", 9);
+				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
+				
+				if (j < coreNum) {
+					
+				} 
+			}
+	
+		}
+		
 		client.stopConnection();
     	} 
 }
