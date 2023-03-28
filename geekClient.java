@@ -1,5 +1,8 @@
  import java.io.*;  
- import java.net.*;  
+ import java.net.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
  
  public class geekClient {
  
@@ -67,8 +70,27 @@
     			System.out.println(e);
     		} 
 	}
+}
+
+//compares jobs by their CPU core numbers in descending order (largest to smalelst)
+class coreComparator implements Comparator<Job> {
 	
-	public static void main(String[] args) throws IOException{  
+	// override the compare() method
+	public int compare(Job j1, Job j2) {
+		if (j1.core() == j2.core()) {
+				return 0;
+			}
+			else if (j1.core() < j2.core()) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		}
+	}
+
+class runClient {
+	public static void main(String[] args) throws IOException {  
 		geekClient client = new geekClient();
 		client.startConnection("localhost",50000);
 		client.handShake();
@@ -79,25 +101,23 @@
 			client.receiveMessage();
 			client.sendMessage("GETS All");
 			
+			//retrieve number of records from Data mesage
 			String data = client.receiveMessage();
 			int nRecs = client.dataExtract(data);
 			
-			int j = 0;
-			List<String> list = new ArrayList<String>();
-				
+			ArrayList<Job> list = new ArrayList<Job>();
+			
+			//loop and add all servers into list of Jobs
 			for(int i = 0; i < nRecs; i++) {
 				String input = client.receiveMessage();
-				
-				String[] arr = input.split(" ", 9);
-				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
-				
-				if (j < coreNum) {
-					
-				} 
+				list.add(new Job(input));
 			}
-	
+
+			//sorts in descending order
+			Collections.sort(list, new coreComparator());
+
 		}
 		
 		client.stopConnection();
-    	} 
+	}
 }

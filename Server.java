@@ -8,7 +8,7 @@ public class Server {
 	private String wJobs;
 	private String rJobs;
 	
-	public void Server(String str) {
+	public Server(String str) {
 		String[] arr = str.split(" ", 10);
 		serverType = arr[0];
 		serverID = arr[1];
@@ -21,15 +21,15 @@ public class Server {
 	}
 	
 	public String type() {
-		return this.serverType();
+		return serverType;
 	}
 	
 	public String id() {
-		return this.serverID();
+		return this.serverID;
 	}
 	
 	public int intID() {
-		int id = Integer.parseInt(this.serverID());
+		int id = Integer.parseInt(this.serverID);
 		return id;
 	}
 }

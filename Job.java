@@ -1,28 +1,44 @@
 public class Job {
-	private String submitTime;
-	private String jobID;
-	private String estRuntime;
-	private String core;
-	private String memory;
-	private String disk;
+	private int submitTime;
+	private int jobID;
+	private int estRuntime;
+	private int coreNum;
+	private int memory;
+	private int diskNum;
 	
-	public String[] Job(String str) {
+	public Job(String str) {
 		String[] arr = str.split(" ", 10);
-		submitTime = Integer.parseInt(arr[0]);
-		jobID = Integer.parseInt(arr[1]);
-		estRuntime = Integer.parseInt(arr[2]);
-		core = Integer.parseInt(arr[3]);
-		memory = Integer.parseInt(arr[4]);
-		disk = Integer.parseInt(arr[5]);
-		return arr;
+		this.submitTime = Integer.parseInt(arr[1]);
+		this.jobID = Integer.parseInt(arr[2]);
+		this.estRuntime = Integer.parseInt(arr[3]);
+		this.coreNum = Integer.parseInt(arr[4]);
+		this.memory = Integer.parseInt(arr[5]);
+		this.diskNum = Integer.parseInt(arr[6]);
 	}
 	
-	public int jobID() {
-		return jobID;
+	public int ID() {
+		return this.jobID;
+	}
+
+	public int sTime() {
+		return this.submitTime;
+	}
+
+	public int runTime() {
+		return this.estRuntime;
+	}
+
+	public int core() {
+		return this.coreNum;
+	}
+
+	public int mem() {
+		return this.memory;
+	}
+
+	public int disk() {
+		return this.diskNum;
 	}
 	
-	public List[] fillArray(Integer[] list, Integer[] curr) {
-		list[0] = 
-	}
 
 }
