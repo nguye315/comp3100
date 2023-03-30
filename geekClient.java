@@ -73,6 +73,7 @@
 		client.handShake();
 		
 		String check = client.receiveMessage();
+		ArrayList<String> serverList = new ArrayList<>();
 		int index = 0;
 		
 		while(check != "NONE\n") {
@@ -86,36 +87,39 @@
 				
 			client.sendMessage("OK");
 				
-			ArrayList<String> serverList = new ArrayList<>();
+
 			int largestCore = 0;
 			String largestSeverType = "";
 				
-			//loop and add all servers into list of Jobs
-			for(int i = 0; i < nRecs; i++) {
-				String input = client.receiveMessage();		
-				serverList.add(input);
-				String curServer = serverList.get(i);
-				
-				String[] arr = curServer.split(" ", 7);
-				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
+			//loop once and add all servers into list of Jobs. Run only once to populate all servers
+			if(serverList.isEmpty()) {
+				for(int i = 0; i < nRecs; i++) {
+					String input = client.receiveMessage();		
+					serverList.add(input);
+					String curServer = serverList.get(i);
+					
+					String[] arr = curServer.split(" ", 7);
+					int coreNum = Integer.parseInt(String.valueOf(arr[4]));
 
-				if (largestCore < coreNum) {
-					largestCore = coreNum;
-					largestSeverType = arr[0];
-				} 
+					if (largestCore < coreNum) {
+						largestCore = coreNum;
+						largestSeverType = arr[0];
+					} 
+				}
+
+				//loops through the server list and removes any that aren't the largest
+				//and first of the largest serverTypes
+				for (String server: serverList) {
+					String[] arr = server.split(" ", 7);
+					int coreNum = Integer.parseInt(String.valueOf(arr[4]));
+					int idx = server.indexOf(server);
+					
+					if (largestCore > coreNum && largestSeverType != arr[0]) {
+						serverList.remove(idx);
+					} 
+				}
 			}
 			
-			//loops through the server list and removes any that aren't the largest
-			//and first of the largest serverTypes
-			for (String server: serverList) {
-				String[] arr = server.split(" ", 7);
-				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
-				int idx = server.indexOf(server);
-				
-				if (largestCore > coreNum && largestSeverType != arr[0]) {
-					serverList.remove(idx);
-				} 
-			}
 			client.sendMessage("OK");
 			client.receiveMessage();
 			
@@ -125,10 +129,11 @@
 			String sID = server[1];
 
 			//retrieves job id fom job scheduled 
-			String[] job = check.split(" ", 7);
-			String jobID = job[2];
+			String[] checkMessage = check.split(" ", 7);
 			
-			if(job[0] == "JOBN") {
+			if(checkMessage[0] == "JOBN") {
+				String[] job = check.split(" ", 7);
+				String jobID = job[2];
 				
 				client.schedule(jobID, sType, sID);
 
