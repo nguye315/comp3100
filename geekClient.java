@@ -73,8 +73,13 @@
 		client.handShake();
 		
 		String check = client.receiveMessage();
+		
+		//initalize values that need to be outside of the while loop
+		//they're used only once throughout the while loop and need ot be the same
 		ArrayList<String> serverList = new ArrayList<>();
 		int index = 0;
+		int largestCore = 0;
+		String largestSeverType = "";
 		
 		while(check != "NONE\n") {
 			client.sendMessage("REDY");
@@ -86,12 +91,8 @@
 			int nRecs = client.dataExtract(data);
 				
 			client.sendMessage("OK");
-				
-
-			int largestCore = 0;
-			String largestSeverType = "";
-				
-			//loop once and add all servers into list of Jobs. Run only once to populate all servers
+		
+			//loop once and adds all servers into list of Jobs. Run only once to populate all servers
 			if(serverList.isEmpty()) {
 				for(int i = 0; i < nRecs; i++) {
 					String input = client.receiveMessage();		
