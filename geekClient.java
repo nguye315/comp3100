@@ -1,8 +1,7 @@
  import java.io.*;  
  import java.net.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
  
  public class geekClient {
  
@@ -52,8 +51,6 @@ import java.util.Comparator;
 		this.sendMessage("HELO");
 		this.receiveMessage();
 		this.sendMessage("AUTH nguy315");
-		this.receiveMessage();
-		this.sendMessage("REDY");
 	}
 	
 	public void schedule(String jobID, String sType, String sID) {
@@ -70,26 +67,8 @@ import java.util.Comparator;
     			System.out.println(e);
     		} 
 	}
-}
-
-//compares jobs by their CPU core numbers in descending order (largest to smalelst)
-class coreComparator implements Comparator<Job> {
 	
-	// override the compare() method
-	public int compare(Job j1, Job j2) {
-		if (j1.core() == j2.core()) {
-				return 0;
-			}
-			else if (j1.core() < j2.core()) {
-				return 1;
-			}
-			else {
-				return -1;
-			}
-		}
-	}
-
-class runClient {
+	
 	public static void main(String[] args) throws IOException {  
 		geekClient client = new geekClient();
 		client.startConnection("localhost",50000);
@@ -97,27 +76,35 @@ class runClient {
 		
 		String str = client.receiveMessage();
 		
-		while(str != "NONE") {
-			client.receiveMessage();
-			client.sendMessage("GETS All");
+		client.sendMessage("REDY");
+		client.receiveMessage();
+		client.sendMessage("GETS All");
+		
+		//retrieve number of records from Data mesage
+		String data = client.receiveMessage();
+		int nRecs = client.dataExtract(data);
+		
+		//while(str != "NONE\n") {
 			
-			//retrieve number of records from Data mesage
-			String data = client.receiveMessage();
-			int nRecs = client.dataExtract(data);
+		client.sendMessage("OK");
 			
-			ArrayList<Job> list = new ArrayList<Job>();
+		String[] list = new String[nRecs];
 			
 			//loop and add all servers into list of Jobs
-			for(int i = 0; i < nRecs; i++) {
-				String input = client.receiveMessage();
-				list.add(new Job(input));
-			}
-
-			//sorts in descending order
-			Collections.sort(list, new coreComparator());
+		for(int i = 0; i < nRecs; i++) {
+			String input = client.receiveMessage();		
+			list[i] = input;	
 
 		}
+			
 		
+			
+		client.sendMessage("OK");
+	
 		client.stopConnection();
 	}
 }
+
+
+
+
