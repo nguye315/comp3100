@@ -1,7 +1,6 @@
  import java.io.*;  
  import java.net.*;
-import java.util.Arrays;
-import java.util.Collections;
+ import java.util.*;
  
  public class geekClient {
  
@@ -68,39 +67,79 @@ import java.util.Collections;
     		} 
 	}
 	
-	
 	public static void main(String[] args) throws IOException {  
 		geekClient client = new geekClient();
 		client.startConnection("localhost",50000);
 		client.handShake();
 		
-		String str = client.receiveMessage();
+		String check = client.receiveMessage();
+		int index = 0;
 		
-		client.sendMessage("REDY");
-		client.receiveMessage();
-		client.sendMessage("GETS All");
-		
-		//retrieve number of records from Data mesage
-		String data = client.receiveMessage();
-		int nRecs = client.dataExtract(data);
-		
-		//while(str != "NONE\n") {
-			
-		client.sendMessage("OK");
-			
-		String[] list = new String[nRecs];
-			
+		while(check != "NONE\n") {
+			client.sendMessage("REDY");
+			client.receiveMessage();
+			client.sendMessage("GETS All");
+				
+			//retrieve number of records from Data mesage
+			String data = client.receiveMessage();
+			int nRecs = client.dataExtract(data);
+				
+			client.sendMessage("OK");
+				
+			ArrayList<String> serverList = new ArrayList<>();
+			int largestCore = 0;
+			String largestSeverType = "";
+				
 			//loop and add all servers into list of Jobs
-		for(int i = 0; i < nRecs; i++) {
-			String input = client.receiveMessage();		
-			list[i] = input;	
+			for(int i = 0; i < nRecs; i++) {
+				String input = client.receiveMessage();		
+				serverList.add(input);
+				String curServer = serverList.get(i);
+				
+				String[] arr = curServer.split(" ", 7);
+				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
 
+				if (largestCore < coreNum) {
+					largestCore = coreNum;
+					largestSeverType = arr[0];
+				} 
+			}
+			
+			//loops through the server list and removes any that aren't the largest
+			//and first of the largest serverTypes
+			for (String server: serverList) {
+				String[] arr = server.split(" ", 7);
+				int coreNum = Integer.parseInt(String.valueOf(arr[4]));
+				int idx = server.indexOf(server);
+				
+				if (largestCore > coreNum && largestSeverType != arr[0]) {
+					serverList.remove(idx);
+				} 
+			}
+			client.sendMessage("OK");
+			client.receiveMessage();
+			
+			//retreives servertype and id from the server at the current index
+			String[] server = serverList.get(index).split(" ", 7);
+			String sType = server[0];
+			String sID = server[1];
+
+			//retrieves job id fom job scheduled 
+			String[] job = check.split(" ", 7);
+			String jobID = job[2];
+			
+			if(job[0] == "JOBN") {
+				
+				client.schedule(jobID, sType, sID);
+
+				if(index == serverList.size()-1) {
+					index = 0;
+				} else {
+					index += 1; 
+				}
+			}
+			check = client.receiveMessage();
 		}
-			
-		
-			
-		client.sendMessage("OK");
-	
 		client.stopConnection();
 	}
 }
