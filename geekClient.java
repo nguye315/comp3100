@@ -108,7 +108,8 @@
 						System.out.println("first largest type of server is" + largestSeverType);
 					} 
 				}
-
+				
+				System.out.println("List of largest servers");
 				//loops through the server list and removes any that aren't the largest
 				//and first of the largest serverTypes
 				for(int i = 0; i < serverList.size(); i++) {
@@ -130,14 +131,17 @@
 			String sID = server[1];
 
 			//retrieves job id fom job scheduled 
-			String[] checkMessage = check.split(" ", 7);
-			
+			String message = check; 
+			String[] checkMessage = message.split(" ", 7);
+		
 			if(checkMessage[0] == "JOBN") {
-				String[] job = check.split(" ", 7);
+				System.out.println("job has been received");
+				String[] job = message.split(" ", 7);
 				String jobID = job[2];
 				
 				client.schedule(jobID, sType, sID);
-
+				System.out.println("job has been scheduled");
+				
 				if(index == serverList.size()-1) {
 					index = 0;
 				} else {
