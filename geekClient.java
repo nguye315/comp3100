@@ -83,9 +83,8 @@
 		
 		while(check != "NONE\n") {
 			client.sendMessage("REDY");
-			client.receiveMessage();
-			client.sendMessage("GETS All");
-				
+			String message = client.receiveMessage();
+							
 			//retrieve number of records from Data mesage
 			String data = client.receiveMessage();
 			int nRecs = client.dataExtract(data);
@@ -94,6 +93,7 @@
 		
 			//loop once and adds all servers into list of Jobs. Run only once to populate all servers
 			if(serverList.isEmpty()) {
+				client.sendMessage("GETS All");
 				for(int i = 0; i < nRecs; i++) {
 					String input = client.receiveMessage();		
 					serverList.add(input);
@@ -131,10 +131,10 @@
 			String sID = server[1];
 
 			//retrieves job id fom job scheduled 
-			String message = check; 
 			String[] checkMessage = message.split(" ", 7);
 			
-			System.out.println(checkMessage[0] = "JOBN");
+			System.out.println(checkMessage[0]);		
+			System.out.println(checkMessage[0].equals("JOBN"));
 			if(checkMessage[0].equals("JOBN")) {
 				System.out.println("job has been received");
 				String[] job = message.split(" ", 7);
