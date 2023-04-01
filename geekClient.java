@@ -112,15 +112,22 @@
 				}
 				
 				System.out.println("List of largest servers");
-				//loops through the server list and removes any that aren't the largest
+				//Iterates through the server list and removes any that aren't the largest
 				//and first of the largest serverTypes
-				for(String server : serverList) {
+
+				Iterator<String> itr = serverList.iterator();
+				while(itr.hasNext()) {
+					String server = itr.next();
 					String[] arr = server.split(" ", 7);
 					int coreNum = Integer.parseInt(String.valueOf(arr[4]));
 					
 					if (largestCore >= coreNum && largestSeverType.equals(arr[0])) {
-						serverList.remove(server);
+						itr.remove();
 					}
+				}
+
+				while(itr.hasNext()) {
+					System.out.println(itr.next());
 				}
 			}
 			
