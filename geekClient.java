@@ -105,19 +105,19 @@
 					if (largestCore < coreNum) {
 						largestCore = coreNum;
 						largestSeverType = arr[0];
+						System.out.println("first largest type of server is" + largestSeverType);
 					} 
 				}
 
 				//loops through the server list and removes any that aren't the largest
 				//and first of the largest serverTypes
-				for (String server: serverList) {
-					String[] arr = server.split(" ", 7);
-					int coreNum = Integer.parseInt(String.valueOf(arr[4]));
-					int idx = server.indexOf(server);
+				for(int i = 0; i < serverList.size(); i++) {
+					String[] server = serverList.get(i).split(" ", 7);
+					int coreNum = Integer.parseInt(String.valueOf(server[4]));
 					
-					if (largestCore > coreNum && largestSeverType != arr[0]) {
-						serverList.remove(idx);
-					} 
+					if (largestCore > coreNum && largestSeverType != server[0]) {
+						serverList.remove(i);
+					}
 				}
 			}
 			
