@@ -81,10 +81,9 @@
 		int largestCore = 0;
 		String largestSeverType = "";
 		
-		while(check != "NONE\n") {
+		while(check.equals("NONE") == false) {
 			client.sendMessage("REDY");
 			String message = client.receiveMessage();		
-
 						
 			//loop once and adds all servers into list of Jobs. Run only once to populate all servers
 			if(serverList.isEmpty()) {
@@ -122,18 +121,18 @@
 					String[] arr = server.split(" ", 7);
 					int coreNum = Integer.parseInt(String.valueOf(arr[4]));
 					
-					if (largestCore >= coreNum && largestSeverType.equals(arr[0])) {
-						itr.remove();
+					if (largestCore >= coreNum) {
+						if(largestSeverType.equals(arr[0]) == false) {
+							itr.remove();
+						}
 					}
 				}
+				//receive OK
+				client.sendMessage("OK");
+				//receive .
+				client.receiveMessage();
 
-				while(itr.hasNext()) {
-					System.out.println(itr.next());
-				}
 			}
-			
-			client.sendMessage("OK");
-			client.receiveMessage();
 			
 			//retreives servertype and id from the server at the current index
 			String[] server = serverList.get(index).split(" ", 7);
@@ -157,7 +156,7 @@
 					index += 1; 
 				}
 			}
-			check = client.receiveMessage();
+			//check = client.receiveMessage();
 		}
 		client.stopConnection();
 	}
