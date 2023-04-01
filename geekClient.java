@@ -133,8 +133,9 @@
 			//retrieves job id fom job scheduled 
 			String message = check; 
 			String[] checkMessage = message.split(" ", 7);
-		
-			if(checkMessage[0] == "JOBN") {
+			
+			System.out.println(checkMessage[0] = "JOBN");
+			if(checkMessage[0].equals("JOBN")) {
 				System.out.println("job has been received");
 				String[] job = message.split(" ", 7);
 				String jobID = job[2];
