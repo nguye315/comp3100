@@ -10,9 +10,9 @@
  	
  	public void startConnection(String ip, int port) {
 	 	try {
-			s = new Socket(ip, port);
-			dout = new DataOutputStream(s.getOutputStream());  
-			din = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			this.s = new Socket(ip, port);
+			this.dout = new DataOutputStream(s.getOutputStream());  
+			this.din = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		}  catch (IOException e) {
 	    			System.out.println(e);
 	    	} 
@@ -20,8 +20,8 @@
 	
 	public void sendMessage(String msg) {
 		try {
-			dout.write((msg + "\n").getBytes());
-			dout.flush();
+			this.dout.write((msg + "\n").getBytes());
+			this.dout.flush();
 			}  catch (IOException e) {
 	    			System.out.println(e);
 	    		} 
@@ -30,7 +30,8 @@
 	public String receiveMessage() {
 		String result = "";
 		try {
-			String msg = din.readLine();
+			String msg = this.din.readLine();
+			this.dout.flush();
 			System.out.println(msg);
 			result = msg;
 
@@ -58,10 +59,10 @@
 	
 	public void stopConnection() {
 		try {
-			dout.write(("QUIT\n").getBytes());
-			dout.flush();
-    			dout.close();  
-    			s.close(); 
+			this.dout.write(("QUIT\n").getBytes());
+			this.dout.flush();
+    			this.dout.close();  
+    			this.s.close(); 
 		}  catch (IOException e) {
     			System.out.println(e);
     		} 
@@ -72,8 +73,6 @@
 		client.startConnection("localhost",50000);
 		client.handShake();
 		
-		String check = client.receiveMessage();
-		
 		//initalize values that need to be outside of the while loop
 		//they're used only once throughout the while loop and need ot be the same
 		ArrayList<String> serverList = new ArrayList<>();
@@ -81,9 +80,19 @@
 		int largestCore = 0;
 		String largestSeverType = "";
 		
-		while(check.equals("NONE") == false) {
+		while(client.receiveMessage().equals("NONE") == false) {
 			client.sendMessage("REDY");
-			String message = client.receiveMessage();		
+			System.out.println("ready has been sent");
+			String message = client.receiveMessage();
+			
+			String[] str = message.split(" ", 10);	
+			String cmd = str[0];
+			
+			if(cmd.equals("JCPL")) {
+				client.sendMessage("REDY");
+			} else if (cmd.equals("NONE")) {
+				break;
+			}
 						
 			//loop once and adds all servers into list of Jobs. Run only once to populate all servers
 			if(serverList.isEmpty()) {
@@ -111,7 +120,6 @@
 					} 
 				}
 				
-				System.out.println("List of largest servers");
 				//Iterates through the server list and removes any that aren't the largest
 				//and first of the largest serverTypes
 
@@ -131,7 +139,7 @@
 				client.sendMessage("OK");
 				//receive .
 				client.receiveMessage();
-
+			
 			}
 			
 			//retreives servertype and id from the server at the current index
@@ -143,20 +151,18 @@
 			String[] checkMessage = message.split(" ", 7);
 		
 			if(checkMessage[0].equals("JOBN")) {
-				System.out.println("job has been received");
 				String[] job = message.split(" ", 7);
 				String jobID = job[2];
 				
 				client.schedule(jobID, sType, sID);
-				System.out.println("job has been scheduled");
 				
 				if(index == serverList.size()-1) {
 					index = 0;
 				} else {
 					index += 1; 
+					System.out.println("Index has been increased to " + index);
 				}
 			}
-			//check = client.receiveMessage();
 		}
 		client.stopConnection();
 	}
